@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ranking de Grupos Musicales</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.0.0/dist/tf.min.js"></script>
+</head>
+<body>
+  <h1>Califica tus grupos musicales favoritos</h1>
+
+  <div id="bands-container"></div>
+  <button onclick="procesarInformacion()">Procesar Información</button>
+  <div id="ranking-container"></div>
+
+  <script>
+    const bands = [
+      { name: 'Nirvana', styles: [1, 0, 0, 0, 0, 0] },
+      { name: 'Nine Inch Nails', styles: [1, 1, 0, 0, 0, 0] },
+      { name: 'Backstreet Boys', styles: [0, 0, 0, 1, 1, 0] },
+      { name: 'N Sync', styles: [0, 0, 0, 1, 0, 0] },
+      { name: 'Night Club', styles: [0, 0, 1, 0, 0, 1] },
+      { name: 'Apashe', styles: [0, 0, 1, 0, 0, 1] },
+      { name: 'STP', styles: [1, 0, 0, 0, 0, 0] }
+    ];
+
+    const features = ['Grunge', 'Rock', 'Industrial', 'Boy Band', 'Dance', 'Techno'];
+    const user_votes = new Array(bands.length).fill(0);
+
+    function renderBands() {
+      const bandsContainer = document.getElementById('bands-container');
+      bands.forEach((band, index) => {
+        const bandDiv = document.createElement('div');
+        const label = document.createElement('label');
+        label.textContent = band.name;
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = 1;
+        input.max = 10;
+        input.value = user_votes[index];
+        input.onchange = (e) => {
+          user_votes[index] = parseInt(e.target.value);
+        };
+        bandDiv.appendChild(label);
+        bandDiv.appendChild(input);
+        bandsContainer.appendChild(bandDiv);
+      });
+    }
+
+    function procesarInformacion() {
+      tf.tidy(() => {
+        const userVotesTensor = tf.tensor(user_votes);
+        const bandFeatsTensor = tf.tensor(bands.map(band => band.styles));
+        const userFeatsTensor = userVotesTensor.dot(bandFeatsTensor);
+
+        const topUserFeatures = tf.topk(userFeatsTensor, features.length);
+        const topGenresIndices = topUserFeatures.indices.arraySync()[0];
+
+        const rankedCategories = topGenresIndices.map((v) => features[v]);
+
+        const rankingContainer = document.getElementById('ranking-container');
+        rankingContainer.innerHTML = '<h2>Tu ranking de estilos musicales:</h2>';
+        rankedCategories.forEach((category, index) => {
+          const p = document.createElement('p');
+          p.textContent = `${index + 1}. ${category}`;
+          rankingContainer.appendChild(p);
+        });
+      });
+    }
+
+    renderBands();
+  </script>
+</body>
+</html>

@@ -1,72 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Ranking de Grupos Musicales</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.0.0/dist/tf.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calificaciones por Grupos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
-  <h1>Califica tus grupos musicales favoritos</h1>
-
-  <div id="bands-container"></div>
-  <button onclick="procesarInformacion()">Procesar Información</button>
-  <div id="ranking-container"></div>
-
-  <script>
-    const bands = [
-      { name: 'Nirvana', styles: [1, 0, 0, 0, 0, 0] },
-      { name: 'Nine Inch Nails', styles: [1, 1, 0, 0, 0, 0] },
-      { name: 'Backstreet Boys', styles: [0, 0, 0, 1, 1, 0] },
-      { name: 'N Sync', styles: [0, 0, 0, 1, 0, 0] },
-      { name: 'Night Club', styles: [0, 0, 1, 0, 0, 1] },
-      { name: 'Apashe', styles: [0, 0, 1, 0, 0, 1] },
-      { name: 'STP', styles: [1, 0, 0, 0, 0, 0] }
-    ];
-
-    const features = ['Grunge', 'Rock', 'Industrial', 'Boy Band', 'Dance', 'Techno'];
-    const user_votes = new Array(bands.length).fill(0);
-
-    function renderBands() {
-      const bandsContainer = document.getElementById('bands-container');
-      bands.forEach((band, index) => {
-        const bandDiv = document.createElement('div');
-        const label = document.createElement('label');
-        label.textContent = band.name;
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = 1;
-        input.max = 10;
-        input.value = user_votes[index];
-        input.onchange = (e) => {
-          user_votes[index] = parseInt(e.target.value);
-        };
-        bandDiv.appendChild(label);
-        bandDiv.appendChild(input);
-        bandsContainer.appendChild(bandDiv);
-      });
-    }
-
-    function procesarInformacion() {
-      tf.tidy(() => {
-        const userVotesTensor = tf.tensor(user_votes);
-        const bandFeatsTensor = tf.tensor(bands.map(band => band.styles));
-        const userFeatsTensor = userVotesTensor.dot(bandFeatsTensor);
-
-        const topUserFeatures = tf.topk(userFeatsTensor, features.length);
-        const topGenresIndices = topUserFeatures.indices.arraySync()[0];
-
-        const rankedCategories = topGenresIndices.map((v) => features[v]);
-
-        const rankingContainer = document.getElementById('ranking-container');
-        rankingContainer.innerHTML = '<h2>Tu ranking de estilos musicales:</h2>';
-        rankedCategories.forEach((category, index) => {
-          const p = document.createElement('p');
-          p.textContent = `${index + 1}. ${category}`;
-          rankingContainer.appendChild(p);
-        });
-      });
-    }
-
-    renderBands();
-  </script>
+    <div class="container">
+        <h1>Calificaciones por Grupos</h1>
+        <form id="formulario">
+            <div class="mb-3">
+                <label for="nirvana" class="form-label">Queen:</label>
+                <input name="nirvana" id="nirvana" class="form-control" type="number">
+            </div>
+            <div class="mb-3">
+                <label for="cuarteto-de-nos" class="form-label">Intoxicados:</label>
+                <input name="cuarteto-de-nos" id="cuarteto-de-nos" class="form-control" type="number">
+            </div>
+            <div class="mb-3">
+                <label for="soda-stereo" class="form-label">Emilia Mernes:</label>
+                <input name="soda-stereo" id="soda-stereo" class="form-control" type="number">
+            </div>
+            <div class="mb-3">
+                <label for="coldplay" class="form-label">Green Day:</label>
+                <input name="coldplay" id="coldplay" class="form-control" type="number">
+            </div>
+            <div class="mb-3">
+                <label for="ed-sheeran" class="form-label">Avril Lavigne:</label>
+                <input name="ed-sheeran" id="ed-sheeran" class="form-control" type="number">
+            </div>
+            <div class="mb-3">
+                <label for="fall-out-boys" class="form-label">Gorillaz:</label>
+                <input name="fall-out-boys" id="fall-out-boys" class="form-control" type="number">
+            </div>
+            <div class="mb-3">
+                <label for="skillet" class="form-label">David Guetta:</label>
+                <input name="skillet" id="skillet" class="form-control" type="number">
+            </div>
+            <div class="mb-3">
+                <label for="shakira" class="form-label">Luis Fonsi:</label>
+                <input name="shakira" id="shakira" class="form-control" type="number">
+            </div>
+            <div class="mb-3">
+                <label for="mana" class="form-label">Juanes:</label>
+                <input name="mana" id="mana" class="form-control" type="number">
+            </div>
+            <button type="submit" class="btn btn-primary">Procesar informacion</button>
+        </form>
+    </div>
+    <!-- TensorFlow.js (optional, if used in app.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.0.0/dist/tf.min.js"></script>
+    <!-- Your custom JavaScript -->
+    <script src="./app.js"></script>
 </body>
 </html>

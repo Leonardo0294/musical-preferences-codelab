@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estilos Musicales Preferidos por Usuario</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.0.0/dist/tf.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Estilos Musicales Preferidos por Usuario</h1>
+        <div id="resultados"></div>
+    </div>
+
+    <script>
+        tf.tidy(() => {
+            // Definición de usuarios, bandas y estilos
+            const users = ['Gant', 'Todd', 'Jed', 'Justin'];
+            const bands = ['Nirvana', 'Nine Inch Nails', 'Backstreet Boys', 'N Sync', 'Night Club', 'Apashe', 'STP'];
+            const features = ['Grunge', 'Rock', 'Industrial', 'Boy Band', 'Dance', 'Techno'];
+
+            // Calificaciones de los usuarios para las bandas musicales
+            const user_votes = tf.tensor([
+                [10, 9, 1, 1, 8, 7, 8],
+                [6, 8, 2, 2, 0, 10, 0],
+                [0, 2, 10, 9, 3, 7, 0],
+                [7, 4, 2, 3, 6, 5, 5]
+            ]);
+
+            // Estilos musicales asociados con cada banda
+            const band_feats = tf.tensor([
+                [1, 1, 0, 0, 0, 0],
+                [1, 0, 1, 0, 0, 0],
+                [0, 0, 0, 1, 1, 0],
+                [0, 0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 0, 1],
+                [0, 0, 1, 0, 0, 1],
+                [1, 1, 0, 0, 0, 0]
+            ]);
+
+            // Calcular preferencias de estilos musicales para cada usuario
+            const user_feats = tf.matMul(user_votes, band_feats);
+
+            // Obtener los principales estilos musicales para cada usuario
+            const top_user_features = tf.topk(user_feats, features.length);
+            const top_genres = top_user_features.indices.arraySync();
+
+            // Mostrar los resultados en el HTML
+            const resultadosElement = document.getElementById('resultados');
+
+            users.forEach((user, i) => {
+                const rankedCategories = top_genres[i].map((index) => features[index]);
+                const resultadoUsuario = document.createElement('p');
+                resultadoUsuario.textContent = `${user}: ${rankedCategories.join(', ')}`;
+                resultadosElement.appendChild(resultadoUsuario);
+            });
+        });
+    </script>
+</body>
+</html>
